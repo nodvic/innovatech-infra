@@ -1,5 +1,5 @@
 resource "aws_ec2_transit_gateway" "this" {
-  description = "Transit Gateway voor Innovatech Hub-Spoke netwerk"
+  description = "Transit Gateway voor Innovatech netwerkarchitectuur"
   
   tags = {
     Name = var.tgw_name
