@@ -17,3 +17,11 @@ output "app_vpc_2_id" {
 output "data_vpc_id" {
   value = module.data_vpc.vpc_id
 }
+
+output "hub_sg_id" {
+  value = module.hub_security.security_group_id
+}
+
+output "app_vpc_1_sg_id" {
+  value = module.app_vpc_1_security.security_group_id
+}

@@ -70,3 +70,27 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "data_vpc" {
     Name = "tgw-attachment-data-vpc"
   }
 }
+
+module "hub_security" {
+  source   = "../../modules/security"
+  vpc_id   = module.hub_vpc.vpc_id
+  vpc_name = "hub"
+}
+
+module "app_vpc_1_security" {
+  source   = "../../modules/security"
+  vpc_id   = module.app_vpc_1.vpc_id
+  vpc_name = "app-1"
+}
+
+module "app_vpc_2_security" {
+  source   = "../../modules/security"
+  vpc_id   = module.app_vpc_2.vpc_id
+  vpc_name = "app-2"
+}
+
+module "data_vpc_security" {
+  source   = "../../modules/security"
+  vpc_id   = module.data_vpc.vpc_id
+  vpc_name = "data"
+}
