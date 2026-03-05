@@ -11,3 +11,5 @@ crash.log
 # Sensitive variables
 *.tfvars
 !terraform.tfvars
+
+.aws/
