@@ -56,9 +56,9 @@ module "data_vpc" {
   source             = "../../modules/vpc"
   vpc_cidr           = "10.3.0.0/16"
   vpc_name           = "innovatech-data-vpc"
-  availability_zones = ["eu-central-1a"]
+  availability_zones = ["eu-central-1a", "eu-central-1b"]
   public_subnets     = []
-  private_subnets    = ["10.3.1.0/24"]
+  private_subnets    = ["10.3.1.0/24", "10.3.2.0/24"]
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "data_vpc" {
@@ -97,12 +97,12 @@ module "data_vpc_security" {
 
 module "database" {
   source             = "../../modules/database"
-  private_subnet_ids = [module.data_vpc.private_subnet_ids[0]]
+  private_subnet_ids = module.data_vpc.private_subnet_ids
   db_sg_id           = module.data_vpc_security.security_group_id
 }
 
 module "compute" {
   source     = "../../modules/compute"
   subnet_ids = [module.app_vpc_1.private_subnet_ids[0], module.app_vpc_2.private_subnet_ids[0]]
-  web_sg_id  = module.app_vpc_1_security.security_group_id
+  web_sg_ids = [module.app_vpc_1_security.security_group_id, module.app_vpc_2_security.security_group_id]
 }
