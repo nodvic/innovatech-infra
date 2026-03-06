@@ -96,13 +96,13 @@ module "data_vpc_security" {
 }
 
 module "database" {
-  source             = "../../modules/data"
-  private_subnet_ids = [module.data_vpc.private_subnets[0]]
-  db_sg_id           = module.data_vpc_security.common_sg_id
+  source             = "../../modules/database"
+  private_subnet_ids = [module.data_vpc.private_subnet_ids[0]]
+  db_sg_id           = module.data_vpc_security.security_group_id
 }
 
 module "compute" {
   source     = "../../modules/compute"
-  subnet_ids = [module.app_vpc_1.private_subnets[0], module.app_vpc_2.private_subnets[0]]
-  web_sg_id  = module.app_vpc_1_security.common_sg_id
+  subnet_ids = [module.app_vpc_1.private_subnet_ids[0], module.app_vpc_2.private_subnet_ids[0]]
+  web_sg_id  = module.app_vpc_1_security.security_group_id
 }
