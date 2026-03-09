@@ -11,7 +11,7 @@ resource "aws_db_instance" "mysql_db" {
   instance_class       = "db.t3.micro"
   username             = "admin"
   password             = "Wachtwoord123!"
-  parameter_group_name = "default.mysql8.0"
+  parameter_group_name = "default.mysql8.4"
   skip_final_snapshot  = true
 
   db_subnet_group_name   = aws_db_subnet_group.data_subnet_group.name
