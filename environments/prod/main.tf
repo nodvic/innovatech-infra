@@ -89,16 +89,11 @@ module "app_vpc_2_security" {
   vpc_name = "app-2"
 }
 
-module "data_vpc_security" {
-  source   = "../../modules/security"
-  vpc_id   = module.data_vpc.vpc_id
-  vpc_name = "data"
-}
-
 module "database" {
-  source             = "../../modules/database"
-  private_subnet_ids = module.data_vpc.private_subnet_ids
-  db_sg_id           = module.data_vpc_security.security_group_id
+  source              = "../../modules/database"
+  private_subnet_ids  = module.data_vpc.private_subnet_ids
+  vpc_id              = module.data_vpc.vpc_id
+  allowed_cidr_blocks = ["10.1.0.0/16", "10.2.0.0/16"]
 }
 
 module "compute" {

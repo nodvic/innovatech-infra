@@ -2,6 +2,10 @@ variable "private_subnet_ids" {
   type = list(string)
 }
 
-variable "db_sg_id" {
+variable "vpc_id" {
   type = string
+}
+
+variable "allowed_cidr_blocks" {
+  type = list(string)
 }
