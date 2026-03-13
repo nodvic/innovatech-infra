@@ -15,6 +15,8 @@ resource "aws_instance" "web" {
               echo "Innovatech Webserver" > /var/www/html/index.html
               EOF
 
+  user_data_replace_on_change = true
+
   tags = {
     Name = "innovatech-webserver-${count.index + 1}"
   }
