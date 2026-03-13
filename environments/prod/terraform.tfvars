@@ -1,1 +1,1 @@
-# Environment specific values 
+admin_email = "ferrie.important@proton.me"

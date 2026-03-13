@@ -109,3 +109,17 @@ module "load_balancer" {
   lb_security_group_id  = module.hub_security.security_group_id
   web_instance_ips      = module.compute.instance_ips
 }
+
+module "monitoring" {
+  source               = "../../modules/monitoring"
+  vpc_id               = module.hub_vpc.vpc_id
+  subnet_id            = module.hub_vpc.private_subnet_ids[0]
+  lb_security_group_id = module.hub_security.security_group_id
+}
+
+module "soar" {
+  source       = "../../modules/soar"
+  vpc_id       = module.hub_vpc.vpc_id
+  admin_email  = var.admin_email
+  instance_ids = module.compute.instance_ids
+}

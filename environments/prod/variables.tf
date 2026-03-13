@@ -1,1 +1,3 @@
-# Variable definitions 
+variable "admin_email" {
+  type = string
+}

@@ -6,6 +6,15 @@ resource "aws_instance" "web" {
   
   vpc_security_group_ids = [var.web_sg_ids[count.index]]
 
+  user_data = <<-EOF
+              #!/bin/bash
+              apt-get update
+              apt-get install -y nginx stress
+              systemctl enable nginx
+              systemctl start nginx
+              echo "Innovatech Webserver" > /var/www/html/index.html
+              EOF
+
   tags = {
     Name = "innovatech-webserver-${count.index + 1}"
   }
