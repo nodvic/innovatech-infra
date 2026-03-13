@@ -4,14 +4,14 @@ module "hub_vpc" {
   vpc_name           = "innovatech-hub-vpc"
   availability_zones = ["eu-central-1a", "eu-central-1b"]
   public_subnets     = ["10.0.1.0/24", "10.0.3.0/24"]
-  private_subnets    = ["10.0.2.0/24"]
+  private_subnets    = ["10.0.2.0/24", "10.0.4.0/24"] 
 }
 
 module "transit_gateway" {
   source         = "../../modules/networking"
   tgw_name       = "innovatech-tgw"
   hub_vpc_id     = module.hub_vpc.vpc_id
-  hub_subnet_ids = module.hub_vpc.public_subnet_ids
+  hub_subnet_ids = module.hub_vpc.private_subnet_ids
 }
 
 module "app_vpc_1" {
@@ -138,12 +138,12 @@ resource "aws_route" "hub_to_app2" {
 
 resource "aws_route" "app_1_to_hub" {
   route_table_id         = module.app_vpc_1.private_route_table_id
-  destination_cidr_block = "10.0.0.0/16"
+  destination_cidr_block = "0.0.0.0/0" 
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
 
 resource "aws_route" "app_2_to_hub" {
   route_table_id         = module.app_vpc_2.private_route_table_id
-  destination_cidr_block = "10.0.0.0/16"
+  destination_cidr_block = "0.0.0.0/0" 
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
