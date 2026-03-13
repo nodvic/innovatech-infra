@@ -101,3 +101,10 @@ module "compute" {
   subnet_ids = [module.app_vpc_1.private_subnet_ids[0], module.app_vpc_2.private_subnet_ids[0]]
   web_sg_ids = [module.app_vpc_1_security.security_group_id, module.app_vpc_2_security.security_group_id]
 }
+
+module "monitoring_lb" {
+  source                = "../../modules/load_balancer"
+  vpc_id                = module.hub_vpc.vpc_id
+  public_subnet_ids     = module.hub_vpc.public_subnet_ids
+  lb_security_group_id  = module.hub_security.security_group_id
+}
