@@ -129,9 +129,6 @@ module "soar" {
   instance_ids = module.compute.instance_ids
 }
 
-# Add routes from the Hub's private subnets to the Spoke VPCs via the TGW
-# This allows resources in the hub (like the monitoring server) to reach the spokes.
-
 resource "aws_route" "hub_private_to_app1" {
   count = length(module.hub_vpc.private_route_table_id)
 
@@ -152,6 +149,24 @@ resource "aws_route" "hub_private_to_data" {
   count = length(module.hub_vpc.private_route_table_id)
 
   route_table_id         = module.hub_vpc.private_route_table_id[count.index]
+  destination_cidr_block = module.data_vpc.vpc_cidr
+  transit_gateway_id     = module.transit_gateway.tgw_id
+}
+
+resource "aws_route" "hub_public_to_app1" {
+  route_table_id         = module.hub_vpc.public_route_table_id
+  destination_cidr_block = module.app_vpc_1.vpc_cidr
+  transit_gateway_id     = module.transit_gateway.tgw_id
+}
+
+resource "aws_route" "hub_public_to_app2" {
+  route_table_id         = module.hub_vpc.public_route_table_id
+  destination_cidr_block = module.app_vpc_2.vpc_cidr
+  transit_gateway_id     = module.transit_gateway.tgw_id
+}
+
+resource "aws_route" "hub_public_to_data" {
+  route_table_id         = module.hub_vpc.public_route_table_id
   destination_cidr_block = module.data_vpc.vpc_cidr
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
