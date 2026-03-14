@@ -125,37 +125,41 @@ module "soar" {
 }
 
 resource "aws_route" "hub_to_app1" {
-  route_table_id         = module.hub_vpc.public_route_table_id[0]
+  route_table_id         = module.hub_vpc.public_route_table_id
   destination_cidr_block = "10.1.0.0/16"
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
 
 resource "aws_route" "hub_to_app2" {
-  route_table_id         = module.hub_vpc.public_route_table_id[0]
+  route_table_id         = module.hub_vpc.public_route_table_id
   destination_cidr_block = "10.2.0.0/16"
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
 
 resource "aws_route" "app_1_to_hub" {
-  route_table_id         = module.app_vpc_1.private_route_table_id
+  route_table_id         = module.app_vpc_1.private_route_table_id[0]
   destination_cidr_block = "0.0.0.0/0"
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
 
 resource "aws_route" "app_2_to_hub" {
-  route_table_id         = module.app_vpc_2.private_route_table_id
+  route_table_id         = module.app_vpc_2.private_route_table_id[0]
   destination_cidr_block = "0.0.0.0/0"
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
 
 resource "aws_route" "hub_private_to_app1" {
-  route_table_id         = module.hub_vpc.private_route_table_id
+  count = length(module.hub_vpc.private_route_table_id)
+
+  route_table_id         = module.hub_vpc.private_route_table_id[count.index]
   destination_cidr_block = "10.1.0.0/16"
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
 
 resource "aws_route" "hub_private_to_app2" {
-  route_table_id         = module.hub_vpc.private_route_table_id
+  count = length(module.hub_vpc.private_route_table_id)
+
+  route_table_id         = module.hub_vpc.private_route_table_id[count.index]
   destination_cidr_block = "10.2.0.0/16"
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
