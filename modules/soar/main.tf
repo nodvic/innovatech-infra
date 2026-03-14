@@ -55,7 +55,7 @@ resource "aws_lambda_function" "soar_response" {
   function_name    = "innovatech_soar_response"
   role             = aws_iam_role.lambda_role.arn
   handler          = "soar_action.lambda_handler"
-  runtime          = "python3.9"
+  runtime          = "python3.12"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 }
 
