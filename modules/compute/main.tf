@@ -1,6 +1,20 @@
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = ["099720109477"] # Canonical
+}
+
 resource "aws_instance" "web" {
   count         = 2
-  ami           = "ami-0084a47cc718c111a"
+  ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   subnet_id     = var.subnet_ids[count.index]
   
@@ -12,7 +26,8 @@ resource "aws_instance" "web" {
               apt-get install -y nginx stress
               systemctl enable nginx
               systemctl start nginx
-              echo "Innovatech Webserver" > /var/www/html/index.html
+              # Aangepast om Terraform force-recreate te triggeren
+              echo "Innovatech Webserver - Geautomatiseerd via Terraform" > /var/www/html/index.html
               EOF
 
   user_data_replace_on_change = true

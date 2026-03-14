@@ -53,6 +53,7 @@ resource "aws_instance" "monitoring" {
               #!/bin/bash
               apt-get update
               apt-get install -y prometheus
+              # Installeer Grafana en forceer herinstallatie via Terraform
               apt-get install -y apt-transport-https software-properties-common wget
               mkdir -p /etc/apt/keyrings/
               wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null
@@ -64,6 +65,8 @@ resource "aws_instance" "monitoring" {
               systemctl enable grafana-server
               systemctl start grafana-server
               EOF
+
+  user_data_replace_on_change = true
 
   tags = {
     Name = "innovatech-monitoring-server"
