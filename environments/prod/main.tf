@@ -21,6 +21,8 @@ module "app_vpc_1" {
   availability_zones = ["eu-central-1a"]
   public_subnets     = []
   private_subnets    = ["10.1.1.0/24"]
+  create_tgw_default_route = true
+  tgw_id                   = module.transit_gateway.tgw_id
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "app_vpc_1" {
@@ -40,6 +42,8 @@ module "app_vpc_2" {
   availability_zones = ["eu-central-1b"]
   public_subnets     = []
   private_subnets    = ["10.2.1.0/24"]
+  create_tgw_default_route = true
+  tgw_id                   = module.transit_gateway.tgw_id
 }
 
 resource "aws_ec2_transit_gateway_vpc_attachment" "app_vpc_2" {
@@ -125,29 +129,8 @@ module "soar" {
   instance_ids = module.compute.instance_ids
 }
 
-resource "aws_route" "hub_to_app1" {
-  route_table_id         = module.hub_vpc.public_route_table_id
-  destination_cidr_block = "10.1.0.0/16"
-  transit_gateway_id     = module.transit_gateway.tgw_id
-}
-
-resource "aws_route" "hub_to_app2" {
-  route_table_id         = module.hub_vpc.public_route_table_id
-  destination_cidr_block = "10.2.0.0/16"
-  transit_gateway_id     = module.transit_gateway.tgw_id
-}
-
-resource "aws_route" "app_1_to_hub" {
-  route_table_id         = module.app_vpc_1.private_route_table_id[0]
-  destination_cidr_block = "0.0.0.0/0"
-  transit_gateway_id     = module.transit_gateway.tgw_id
-}
-
-resource "aws_route" "app_2_to_hub" {
-  route_table_id         = module.app_vpc_2.private_route_table_id[0]
-  destination_cidr_block = "0.0.0.0/0"
-  transit_gateway_id     = module.transit_gateway.tgw_id
-}
+# Add routes from the Hub's private subnets to the Spoke VPCs via the TGW
+# This allows resources in the hub (like the monitoring server) to reach the spokes.
 
 resource "aws_route" "hub_private_to_app1" {
   count = length(module.hub_vpc.private_route_table_id)
@@ -162,5 +145,13 @@ resource "aws_route" "hub_private_to_app2" {
 
   route_table_id         = module.hub_vpc.private_route_table_id[count.index]
   destination_cidr_block = "10.2.0.0/16"
+  transit_gateway_id     = module.transit_gateway.tgw_id
+}
+
+resource "aws_route" "hub_private_to_data" {
+  count = length(module.hub_vpc.private_route_table_id)
+
+  route_table_id         = module.hub_vpc.private_route_table_id[count.index]
+  destination_cidr_block = module.data_vpc.vpc_cidr
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
