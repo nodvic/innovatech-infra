@@ -14,6 +14,12 @@ module "transit_gateway" {
   hub_subnet_ids = module.hub_vpc.private_subnet_ids
 }
 
+resource "aws_ec2_transit_gateway_route" "to_internet" {
+  destination_cidr_block         = "0.0.0.0/0"
+  transit_gateway_attachment_id  = module.transit_gateway.hub_vpc_attachment_id
+  transit_gateway_route_table_id = module.transit_gateway.tgw_default_route_table_id
+}
+
 module "app_vpc_1" {
   source             = "../../modules/vpc"
   vpc_cidr           = "10.1.0.0/16"
