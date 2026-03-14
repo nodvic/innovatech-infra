@@ -100,6 +100,7 @@ module "database" {
   private_subnet_ids  = module.data_vpc.private_subnet_ids
   vpc_id              = module.data_vpc.vpc_id
   allowed_cidr_blocks = ["10.1.0.0/16", "10.2.0.0/16"]
+  db_password         = var.db_password
 }
 
 module "compute" {
