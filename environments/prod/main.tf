@@ -159,3 +159,22 @@ resource "aws_route" "hub_private_to_app2" {
   destination_cidr_block = "10.2.0.0/16"
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
+
+resource "aws_eip" "hub_nat_eip" {
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "hub_nat" {
+  allocation_id = aws_eip.hub_nat_eip.id
+  subnet_id     = module.hub_vpc.public_subnet_ids[0]
+
+  tags = {
+    Name = "innovatech-hub-nat"
+  }
+}
+
+resource "aws_route" "hub_private_to_nat" {
+  route_table_id         = module.hub_vpc.private_route_table_id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.hub_nat.id
+}
