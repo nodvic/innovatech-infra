@@ -147,3 +147,15 @@ resource "aws_route" "app_2_to_hub" {
   destination_cidr_block = "0.0.0.0/0"
   transit_gateway_id     = module.transit_gateway.tgw_id
 }
+
+resource "aws_route" "hub_private_to_app1" {
+  route_table_id         = module.hub_vpc.private_route_table_id
+  destination_cidr_block = "10.1.0.0/16"
+  transit_gateway_id     = module.transit_gateway.tgw_id
+}
+
+resource "aws_route" "hub_private_to_app2" {
+  route_table_id         = module.hub_vpc.private_route_table_id
+  destination_cidr_block = "10.2.0.0/16"
+  transit_gateway_id     = module.transit_gateway.tgw_id
+}
