@@ -19,7 +19,7 @@ resource "aws_security_group" "db_sg" {
 }
 
 resource "aws_db_subnet_group" "data_subnet_group" {
-  name_prefix = "innovatech-db-subnet-group-"
+  name_prefix = "innovatech-db-sng-"
   subnet_ids = var.private_subnet_ids
 
   lifecycle {

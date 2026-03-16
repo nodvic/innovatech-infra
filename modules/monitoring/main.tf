@@ -39,7 +39,7 @@ data "aws_ami" "ubuntu" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-  owners = ["099720109477"] # Canonical
+  owners = ["099720109477"]
 }
 
 resource "aws_instance" "monitoring" {
@@ -53,7 +53,6 @@ resource "aws_instance" "monitoring" {
               #!/bin/bash
               apt-get update
               apt-get install -y prometheus
-              # Installeer Grafana en forceer herinstallatie via Terraform
               apt-get install -y apt-transport-https software-properties-common wget
               mkdir -p /etc/apt/keyrings/
               wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null
