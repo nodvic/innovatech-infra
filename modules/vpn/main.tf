@@ -62,6 +62,9 @@ resource "aws_instance" "vpn" {
 
               # Start de webserver direct op de achtergrond, zodat de poort bereikbaar is
               mkdir -p /var/www/vpn
+              # Maak een snelkoppeling zodat de log áltijd direct zichtbaar is, zelfs bij een crash
+              touch /var/log/user-data.log
+              ln -s /var/log/user-data.log /var/www/vpn/log.txt
               cd /var/www/vpn
               nohup python3 -m http.server 8080 > /dev/null 2>&1 &
 
@@ -77,6 +80,7 @@ resource "aws_instance" "vpn" {
               curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
               chmod +x openvpn-install.sh
               export AUTO_INSTALL=y
+              export APPROVE_INSTALL=y
               export APPROVE_IP=y
               export ENDPOINT=$PUBLIC_IP
               export CLIENT=client
@@ -89,10 +93,6 @@ resource "aws_instance" "vpn" {
                 cp "$OVPN_FILE" /var/www/vpn/client.ovpn
                 chmod 644 /var/www/vpn/client.ovpn
               fi
-
-              # Stel de log beschikbaar voor troubleshooting als het tóch faalt
-              cp /var/log/user-data.log /var/www/vpn/log.txt
-              chmod 644 /var/www/vpn/log.txt
               EOF
 
   user_data_replace_on_change = true
