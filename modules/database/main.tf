@@ -7,7 +7,7 @@ resource "aws_security_group" "db_sg" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
+    security_groups = [var.source_security_group_id]
   }
 
   egress {
@@ -30,9 +30,11 @@ resource "aws_db_subnet_group" "data_subnet_group" {
 resource "aws_db_instance" "mysql_db" {
   allocated_storage    = 20
   db_name              = "innovatechdb"
+  db_name              = var.db_name
   engine               = "mysql"
   engine_version       = "8.4.7"
   instance_class       = "db.t3.micro"
+  instance_class       = var.instance_class
   username             = var.db_username
   password             = var.db_password
   parameter_group_name = "default.mysql8.4"

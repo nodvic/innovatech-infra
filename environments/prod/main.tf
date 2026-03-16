@@ -17,14 +17,14 @@ module "database" {
   source              = "../../modules/database"
   private_subnet_ids  = module.main_vpc.private_subnet_ids
   vpc_id              = module.main_vpc.vpc_id
-  allowed_cidr_blocks = [module.main_vpc.vpc_cidr]
-  db_password         = var.db_password
+  source_security_group_id = module.security.security_group_id
+  db_password              = var.db_password
 }
 
 module "compute" {
   source     = "../../modules/compute"
   subnet_ids = module.main_vpc.private_subnet_ids
-  web_sg_ids = [module.security.security_group_id, module.security.security_group_id]
+  web_sg_ids = [module.security.security_group_id]
 }
 
 module "load_balancer" {
