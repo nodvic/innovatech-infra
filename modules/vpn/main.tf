@@ -65,17 +65,21 @@ resource "aws_instance" "vpn" {
               cd /var/www/vpn
               nohup python3 -m http.server 8080 > /dev/null 2>&1 &
 
+              # Ga naar root map voor de installatie
+              cd /root
+
               # Installeer OpenVPN automatisch
               curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
               chmod +x openvpn-install.sh
               export AUTO_INSTALL=y
               export APPROVE_IP=y
+              export CLIENT=client
+              export PASS=1
               ./openvpn-install.sh
               
-              # Zoek het gegenereerde .ovpn bestand op en kopieer het
-              OVPN_FILE=$(find /root /home/ubuntu -name "*.ovpn" | head -n 1)
-              if [ -n "$OVPN_FILE" ]; then
-                cp "$OVPN_FILE" /var/www/vpn/client.ovpn
+              # Kopieer het bestand naar de webserver map
+              if [ -f "/root/client.ovpn" ]; then
+                cp /root/client.ovpn /var/www/vpn/client.ovpn
                 chmod 644 /var/www/vpn/client.ovpn
               fi
               EOF
