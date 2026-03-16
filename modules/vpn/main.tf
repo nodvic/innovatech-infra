@@ -49,6 +49,11 @@ resource "aws_instance" "vpn" {
 
   user_data = <<-EOF
               #!/bin/bash
+              # Voorkom interactieve prompts tijdens apt installaties
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get update -y
+              apt-get install -y curl iptables iproute2
+
               # Installeer OpenVPN automatisch
               curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
               chmod +x openvpn-install.sh
@@ -57,7 +62,10 @@ resource "aws_instance" "vpn" {
               
               # Maak het configuratiebestand veilig beschikbaar via een interne webserver
               mkdir -p /var/www/vpn
-              cp /root/client.ovpn /var/www/vpn/client.ovpn
+              
+              # Pak het gegenereerde .ovpn bestand (ongeacht de naam) en noem het client.ovpn
+              cp /root/*.ovpn /var/www/vpn/client.ovpn
+              
               cd /var/www/vpn
               nohup python3 -m http.server 8080 > /dev/null 2>&1 &
               EOF
