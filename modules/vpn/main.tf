@@ -52,22 +52,22 @@ resource "aws_instance" "vpn" {
               # Voorkom interactieve prompts tijdens apt installaties
               export DEBIAN_FRONTEND=noninteractive
               apt-get update -y
-              apt-get install -y curl iptables iproute2
+              apt-get install -y curl iptables iproute2 python3
+
+              # Start de webserver direct op de achtergrond, zodat de poort bereikbaar is
+              mkdir -p /var/www/vpn
+              cd /var/www/vpn
+              nohup python3 -m http.server 8080 > /dev/null 2>&1 &
 
               # Installeer OpenVPN automatisch
               curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
               chmod +x openvpn-install.sh
               export AUTO_INSTALL=y
+              export APPROVE_IP=y
               ./openvpn-install.sh
-              
-              # Maak het configuratiebestand veilig beschikbaar via een interne webserver
-              mkdir -p /var/www/vpn
               
               # Pak het gegenereerde .ovpn bestand (ongeacht de naam) en noem het client.ovpn
               cp /root/*.ovpn /var/www/vpn/client.ovpn
-              
-              cd /var/www/vpn
-              nohup python3 -m http.server 8080 > /dev/null 2>&1 &
               EOF
 
   tags = {
