@@ -97,19 +97,9 @@ resource "aws_route_table_association" "private" {
 }
 
 resource "aws_route" "private_nat_gateway" {
-  # Create this route if we are NOT creating a TGW default route AND there are public subnets (and thus NAT gateways).
-  count = !var.create_tgw_default_route && length(var.public_subnets) > 0 ? length(var.private_subnets) : 0
+  count = length(var.public_subnets) > 0 ? length(var.private_subnets) : 0
 
   route_table_id         = aws_route_table.private[count.index].id
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.this[count.index].id
-}
-
-resource "aws_route" "private_tgw_default" {
-  # Create this route if we ARE creating a TGW default route.
-  count = var.create_tgw_default_route ? length(var.private_subnets) : 0
-
-  route_table_id         = aws_route_table.private[count.index].id
-  destination_cidr_block = "0.0.0.0/0"
-  transit_gateway_id     = var.tgw_id
 }
