@@ -65,23 +65,34 @@ resource "aws_instance" "vpn" {
               cd /var/www/vpn
               nohup python3 -m http.server 8080 > /dev/null 2>&1 &
 
-              # Ga naar root map voor de installatie
+              # Forceer de root map en HOME variabele
               cd /root
+              export HOME=/root
+
+              # Haal het publieke IP op via de AWS Metadata (voorkomt vastlopen bij IP detectie)
+              TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+              PUBLIC_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
 
               # Installeer OpenVPN automatisch
               curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
               chmod +x openvpn-install.sh
               export AUTO_INSTALL=y
               export APPROVE_IP=y
+              export ENDPOINT=$PUBLIC_IP
               export CLIENT=client
               export PASS=1
               ./openvpn-install.sh
               
               # Kopieer het bestand naar de webserver map
-              if [ -f "/root/client.ovpn" ]; then
-                cp /root/client.ovpn /var/www/vpn/client.ovpn
+              OVPN_FILE=$(find /root /home -maxdepth 2 -name "*.ovpn" 2>/dev/null | head -n 1)
+              if [ -n "$OVPN_FILE" ]; then
+                cp "$OVPN_FILE" /var/www/vpn/client.ovpn
                 chmod 644 /var/www/vpn/client.ovpn
               fi
+
+              # Stel de log beschikbaar voor troubleshooting als het tóch faalt
+              cp /var/log/user-data.log /var/www/vpn/log.txt
+              chmod 644 /var/www/vpn/log.txt
               EOF
 
   user_data_replace_on_change = true
