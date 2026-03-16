@@ -63,7 +63,7 @@ resource "aws_instance" "monitoring" {
 
               # Install Loki
               LOKI_VERSION="2.9.1"
-              wget https://github.com/grafana/loki/releases/download/v${LOKI_VERSION}/loki-linux-amd64.zip
+              wget https://github.com/grafana/loki/releases/download/v$${LOKI_VERSION}/loki-linux-amd64.zip
               unzip loki-linux-amd64.zip
               mv loki-linux-amd64 /usr/local/bin/loki
               # Note: For a production setup, Loki would need a config file and a systemd service.
