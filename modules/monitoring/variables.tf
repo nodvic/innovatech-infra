@@ -8,7 +8,7 @@ variable "subnet_id" {
   type        = string
 }
 
-variable "vpn_cidr_block" {
-  description = "The CIDR block of the VPN network allowed to access the monitoring tools."
+variable "vpn_security_group_id" {
+  description = "The Security Group ID of the VPN server allowed to access the monitoring tools."
   type        = string
 }

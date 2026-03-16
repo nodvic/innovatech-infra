@@ -32,3 +32,8 @@ output "monitoring_instance_private_ip" {
   description = "The private IP of the monitoring instance."
   value       = module.monitoring.monitoring_instance_ip
 }
+
+output "vpn_download_link" {
+  description = "Ga naar deze link om je OpenVPN configuratie te downloaden."
+  value       = "http://${module.vpn.vpn_public_ip}:8080/client.ovpn"
+}

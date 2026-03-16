@@ -1,5 +1,6 @@
 variable "admin_email" {
-  type = string
+  description = "Email address for SOAR alerts."
+  type        = string
 }
 
 variable "db_password" {

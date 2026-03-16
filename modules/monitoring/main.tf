@@ -6,14 +6,14 @@ resource "aws_security_group" "monitoring_sg" {
     from_port       = 3000
     to_port         = 3000
     protocol        = "tcp"
-    cidr_blocks     = [var.vpn_cidr_block]
+    security_groups = [var.vpn_security_group_id]
   }
 
   ingress {
     from_port       = 9090
     to_port         = 9090
     protocol        = "tcp"
-    cidr_blocks     = [var.vpn_cidr_block]
+    security_groups = [var.vpn_security_group_id]
   }
 
   egress {

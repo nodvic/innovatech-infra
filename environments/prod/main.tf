@@ -35,11 +35,18 @@ module "load_balancer" {
   web_instance_ips      = module.compute.instance_ips
 }
 
+module "vpn" {
+  source           = "../../modules/vpn"
+  vpc_id           = module.main_vpc.vpc_id
+  subnet_id        = module.main_vpc.public_subnet_ids[0]
+  admin_cidr_block = var.vpn_cidr_block
+}
+
 module "monitoring" {
   source               = "../../modules/monitoring"
   vpc_id               = module.main_vpc.vpc_id
   subnet_id            = module.main_vpc.private_subnet_ids[0]
-  vpn_cidr_block       = var.vpn_cidr_block
+  vpn_security_group_id = module.vpn.security_group_id
 }
 
 module "soar" {
