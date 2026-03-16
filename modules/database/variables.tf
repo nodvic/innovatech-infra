@@ -36,3 +36,15 @@ variable "instance_class" {
   type        = string
   default     = "db.t3.micro"
 }
+
+variable "skip_final_snapshot" {
+  description = "Determines whether a final DB snapshot is created before the DB instance is deleted. Should be `false` for production."
+  type        = bool
+  default     = true
+}
+
+variable "multi_az" {
+  description = "Specifies if the DB instance is a Multi-AZ deployment. Should be `true` for production."
+  type        = bool
+  default     = false
+}

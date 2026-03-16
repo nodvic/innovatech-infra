@@ -29,19 +29,17 @@ resource "aws_db_subnet_group" "data_subnet_group" {
 
 resource "aws_db_instance" "mysql_db" {
   allocated_storage    = 20
-  db_name              = "innovatechdb"
   db_name              = var.db_name
   engine               = "mysql"
   engine_version       = "8.4.7"
-  instance_class       = "db.t3.micro"
   instance_class       = var.instance_class
   username             = var.db_username
   password             = var.db_password
   parameter_group_name = "default.mysql8.4"
-  skip_final_snapshot  = true
+  skip_final_snapshot  = var.skip_final_snapshot
 
   db_subnet_group_name   = aws_db_subnet_group.data_subnet_group.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
 
-  multi_az = false
+  multi_az = var.multi_az
 }
