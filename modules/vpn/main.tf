@@ -49,6 +49,12 @@ resource "aws_instance" "vpn" {
 
   user_data = <<-EOF
               #!/bin/bash
+              # Log alle output naar een bestand (handig voor troubleshooten)
+              exec > /var/log/user-data.log 2>&1
+
+              # Wacht tot automatische Ubuntu-updates op de achtergrond klaar zijn
+              while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 5; done;
+
               # Voorkom interactieve prompts tijdens apt installaties
               export DEBIAN_FRONTEND=noninteractive
               apt-get update -y
@@ -66,9 +72,15 @@ resource "aws_instance" "vpn" {
               export APPROVE_IP=y
               ./openvpn-install.sh
               
-              # Pak het gegenereerde .ovpn bestand (ongeacht de naam) en noem het client.ovpn
-              cp /root/*.ovpn /var/www/vpn/client.ovpn
+              # Zoek het gegenereerde .ovpn bestand op en kopieer het
+              OVPN_FILE=$(find /root /home/ubuntu -name "*.ovpn" | head -n 1)
+              if [ -n "$OVPN_FILE" ]; then
+                cp "$OVPN_FILE" /var/www/vpn/client.ovpn
+                chmod 644 /var/www/vpn/client.ovpn
+              fi
               EOF
+
+  user_data_replace_on_change = true
 
   tags = {
     Name = "innovatech-openvpn-server"
