@@ -18,7 +18,7 @@ resource "aws_instance" "web" {
   instance_type = "t2.micro"
   subnet_id     = var.subnet_ids[count.index]
   
-  vpc_security_group_ids = [var.web_sg_ids[count.index]]
+  vpc_security_group_ids = var.web_sg_ids
 
   user_data = <<-EOF
               #!/bin/bash
