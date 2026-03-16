@@ -39,7 +39,7 @@ module "monitoring" {
   source               = "../../modules/monitoring"
   vpc_id               = module.main_vpc.vpc_id
   subnet_id            = module.main_vpc.private_subnet_ids[0]
-  lb_security_group_id = module.security.security_group_id
+  vpn_cidr_block       = var.vpn_cidr_block
 }
 
 module "soar" {

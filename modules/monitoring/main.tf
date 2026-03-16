@@ -6,14 +6,14 @@ resource "aws_security_group" "monitoring_sg" {
     from_port       = 3000
     to_port         = 3000
     protocol        = "tcp"
-    security_groups = [var.lb_security_group_id]
+    cidr_blocks     = [var.vpn_cidr_block]
   }
 
   ingress {
     from_port       = 9090
     to_port         = 9090
     protocol        = "tcp"
-    security_groups = [var.lb_security_group_id]
+    cidr_blocks     = [var.vpn_cidr_block]
   }
 
   egress {
@@ -52,13 +52,23 @@ resource "aws_instance" "monitoring" {
   user_data = <<-EOF
               #!/bin/bash
               apt-get update
-              apt-get install -y prometheus
-              apt-get install -y apt-transport-https software-properties-common wget
+              apt-get install -y prometheus apt-transport-https software-properties-common wget unzip
+
+              # Install Grafana
               mkdir -p /etc/apt/keyrings/
               wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null
               echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | tee -a /etc/apt/sources.list.d/grafana.list
               apt-get update
               apt-get install -y grafana
+
+              # Install Loki
+              LOKI_VERSION="2.9.1"
+              wget https://github.com/grafana/loki/releases/download/v${LOKI_VERSION}/loki-linux-amd64.zip
+              unzip loki-linux-amd64.zip
+              mv loki-linux-amd64 /usr/local/bin/loki
+              # Note: For a production setup, Loki would need a config file and a systemd service.
+
+              # Enable and start services
               systemctl enable prometheus
               systemctl start prometheus
               systemctl enable grafana-server

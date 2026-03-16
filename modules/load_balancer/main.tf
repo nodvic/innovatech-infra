@@ -19,7 +19,6 @@ resource "aws_lb_target_group_attachment" "web_attachment" {
   target_group_arn  = aws_lb_target_group.web_tg.arn
   target_id         = var.web_instance_ips[count.index]
   port              = 80
-  availability_zone = "all"
 }
 
 resource "aws_lb_listener" "http" {

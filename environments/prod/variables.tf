@@ -7,3 +7,8 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "vpn_cidr_block" {
+  description = "The CIDR block of the VPN network to allow access to the monitoring dashboard."
+  type        = string
+}

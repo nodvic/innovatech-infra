@@ -13,6 +13,7 @@ jobs:
       AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
       TF_VAR_admin_email: ${{ secrets.TF_VAR_ADMIN_EMAIL }}
       TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+      TF_VAR_vpn_cidr_block: ${{ secrets.TF_VAR_VPN_CIDR_BLOCK }}
       TF_WORKING_DIR: 'environments/prod'
 
     steps:
