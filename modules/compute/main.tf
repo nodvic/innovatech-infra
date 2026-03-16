@@ -22,11 +22,11 @@ resource "aws_instance" "web" {
 
   user_data = <<-EOF
               #!/bin/bash
+              sleep 15
               apt-get update
               apt-get install -y nginx stress
               systemctl enable nginx
               systemctl start nginx
-              # Aangepast om Terraform force-recreate te triggeren
               echo "Innovatech Webserver - Geautomatiseerd via Terraform" > /var/www/html/index.html
               EOF
 
