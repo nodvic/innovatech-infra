@@ -31,7 +31,7 @@ data "aws_ami" "ubuntu" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-jammy-22.04-amd64-server-*"]
   }
   filter {
     name   = "virtualization-type"
@@ -72,20 +72,12 @@ resource "aws_instance" "vpn" {
               cd /root
               export HOME=/root
 
-              # Haal het publieke IP op via de AWS Metadata (voorkomt vastlopen bij IP detectie)
-              TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-              PUBLIC_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
-
               # Installeer OpenVPN automatisch
               curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
               chmod +x openvpn-install.sh
-              export AUTO_INSTALL=y
-              export APPROVE_INSTALL=y
-              export APPROVE_IP=y
-              export ENDPOINT=$PUBLIC_IP
-              export CLIENT=client
-              export PASS=1
-              ./openvpn-install.sh
+              
+              # Gebruik de robuuste standaard CLI installatiemethode
+              AUTO_INSTALL=y ./openvpn-install.sh
               
               # Kopieer het bestand naar de webserver map
               OVPN_FILE=$(find /root /home -maxdepth 2 -name "*.ovpn" 2>/dev/null | head -n 1)
