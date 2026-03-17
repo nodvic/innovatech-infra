@@ -205,7 +205,7 @@ OVPNEOF
     systemctl start openvpn@server
 
     echo "[SUCCESS] OpenVPN installatie voltooid! Download: http://$${PUBLIC_IP}:8080/client.ovpn"
-  USERDATA
+    USERDATA
 
   user_data_replace_on_change = true
 
