@@ -47,9 +47,10 @@ resource "aws_instance" "vpn" {
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.vpn_sg.id]
 
-  # Het <<-'EOF' (met aanhalingstekens) zorgt ervoor dat Terraform de inhoud
-  # NIET interpreteert als HCL. Alle bash-variabelen ($VAR) blijven intact.
-  user_data = <<-'USERDATA'
+  # LET OP: Terraform herkent geen <<-'HEREDOC' (bash-stijl quoted heredoc).
+  # In plaats daarvan escapen we alle bash ${VAR} naar $${VAR} zodat
+  # Terraform ze niet als HCL-interpolatie behandelt.
+  user_data = <<-USERDATA
     #!/bin/bash
     set -euo pipefail
     exec > /var/log/user-data.log 2>&1
@@ -126,7 +127,7 @@ resource "aws_instance" "vpn" {
     # FASE 5: Server configuratie schrijven
     # -------------------------------------------------------
     echo "[5/6] OpenVPN server configuratie schrijven..."
-    cat > /etc/openvpn/server.conf <<'SERVERCONF'
+    cat > /etc/openvpn/server.conf <<SERVERCONF
 port 1194
 proto udp
 dev tun
@@ -168,11 +169,13 @@ SERVERCONF
     CLIENT_KEY=$(cat "$EASYRSA_DIR/pki/private/client.key")
     TLS_AUTH=$(cat /etc/openvpn/ta.key)
 
+    # $${VAR} hieronder: dubbele $ zodat Terraform ze NIET interpoleert,
+    # maar de bash-shell ze op runtime wél ziet als gewone $VAR.
     cat > /var/www/vpn/client.ovpn <<OVPNEOF
 client
 dev tun
 proto udp
-remote ${PUBLIC_IP} 1194
+remote $${PUBLIC_IP} 1194
 resolv-retry infinite
 nobind
 persist-key
@@ -182,16 +185,16 @@ cipher AES-256-CBC
 verb 3
 key-direction 1
 <ca>
-${CA_CERT}
+$${CA_CERT}
 </ca>
 <cert>
-${CLIENT_CERT}
+$${CLIENT_CERT}
 </cert>
 <key>
-${CLIENT_KEY}
+$${CLIENT_KEY}
 </key>
 <tls-auth>
-${TLS_AUTH}
+$${TLS_AUTH}
 </tls-auth>
 OVPNEOF
 
@@ -201,7 +204,7 @@ OVPNEOF
     systemctl enable openvpn@server
     systemctl start openvpn@server
 
-    echo "[SUCCESS] OpenVPN installatie voltooid! Download: http://${PUBLIC_IP}:8080/client.ovpn"
+    echo "[SUCCESS] OpenVPN installatie voltooid! Download: http://$${PUBLIC_IP}:8080/client.ovpn"
   USERDATA
 
   user_data_replace_on_change = true
